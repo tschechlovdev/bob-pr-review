@@ -10,16 +10,24 @@ def todo_to_dict(row):
         "title": row["title"],
         "completed": bool(row["completed"]),
         "status": row["status"],
+        "assignee": row["assignee"],
         "created_at": row["created_at"],
     }
 
 
 @todos_bp.get("")
 def list_todos():
+    assignee = request.args.get("assignee")
     with get_db() as conn:
-        rows = conn.execute(
-            "SELECT * FROM todos ORDER BY created_at DESC, id DESC"
-        ).fetchall()
+        if assignee:
+            rows = conn.execute(
+                f"SELECT * FROM todos WHERE assignee = '{assignee}' "
+                "ORDER BY created_at DESC, id DESC"
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                "SELECT * FROM todos ORDER BY created_at DESC, id DESC"
+            ).fetchall()
     return jsonify([todo_to_dict(r) for r in rows]), 200
 
 
@@ -72,6 +80,9 @@ def update_todo(todo_id):
             if not title:
                 return jsonify({"error": "title must not be empty"}), 400
             fields["title"] = title
+
+        if "assignee" in data:
+            fields["assignee"] = (data["assignee"] or "").strip() or None
 
         if "status" in data:
             status = data["status"]
