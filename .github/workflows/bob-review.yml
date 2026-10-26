@@ -26,13 +26,18 @@ jobs:
       - name: Diff erzeugen
         run: git diff "origin/${{ github.base_ref }}...HEAD" > pr.diff
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
       - name: Bob Shell installieren
+        timeout-minutes: 5
         run: |
-          curl -fsSL https://bob.ibm.com/download/bobshell.sh | bash
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-          echo "$HOME/.bob/bin" >> "$GITHUB_PATH"
+          curl -fsSL https://bob.ibm.com/download/bobshell.sh | bash -s -- --pm npm < /dev/null
+          command -v bob || { echo "bob nicht im PATH"; exit 1; }
 
       - name: Review durch Bob
+        timeout-minutes: 10
         env:
           BOBSHELL_API_KEY: ${{ secrets.BOBSHELL_API_KEY }}
         run: |
