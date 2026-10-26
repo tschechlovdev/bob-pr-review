@@ -11,7 +11,9 @@ with app.app_context():
 
 # Routes are registered below (implemented in full here)
 from routes import todos_bp  # noqa: E402
+from collab import collab_bp  # noqa: E402
 app.register_blueprint(todos_bp)
+app.register_blueprint(collab_bp)
 
 
 @app.errorhandler(404)

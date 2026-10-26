@@ -30,4 +30,25 @@ def init_db():
             conn.execute("UPDATE todos SET status = 'done' WHERE completed = 1")
             conn.execute("UPDATE todos SET status = 'todo' WHERE completed = 0")
         
+        if "assignee" not in columns:
+            conn.execute("ALTER TABLE todos ADD COLUMN assignee TEXT")
+
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS comments (
+                id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                todo_id    INTEGER NOT NULL,
+                author     TEXT    NOT NULL,
+                body       TEXT    NOT NULL,
+                created_at TEXT    NOT NULL DEFAULT (datetime('now'))
+            )
+        """)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS attachments (
+                id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                todo_id    INTEGER NOT NULL,
+                filename   TEXT    NOT NULL,
+                created_at TEXT    NOT NULL DEFAULT (datetime('now'))
+            )
+        """)
+
         conn.commit()

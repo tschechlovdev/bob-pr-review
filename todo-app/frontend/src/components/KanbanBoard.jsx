@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
+import CardDetails from './CardDetails'
 
 function KanbanCard({ todo, onUpdate, onDelete }) {
   const [isEditing, setIsEditing] = useState(false)
+  const [expanded, setExpanded] = useState(false)
   const [draft, setDraft] = useState(todo.title)
   const inputRef = useRef(null)
 
@@ -40,9 +42,10 @@ function KanbanCard({ todo, onUpdate, onDelete }) {
     <div
       draggable
       onDragStart={handleDragStart}
-      className="flex items-center gap-3 rounded-lg bg-white p-3 border border-gray-200
+      className="rounded-lg bg-white p-3 border border-gray-200
                  shadow-sm cursor-grab active:cursor-grabbing hover:shadow transition-shadow"
     >
+      <div className="flex items-center gap-3">
       {/* Draggable indicator dots icon */}
       <div className="text-gray-400 select-none flex-shrink-0" title="Drag to reorder">
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -84,6 +87,18 @@ function KanbanCard({ todo, onUpdate, onDelete }) {
       >
         ×
       </button>
+      </div>
+
+      <div className="mt-1 flex items-center justify-between text-xs text-gray-500">
+        <span>{todo.assignee ? `@${todo.assignee}` : 'Unassigned'}</span>
+        <button
+          onClick={() => setExpanded((v) => !v)}
+          className="text-blue-600 hover:underline"
+        >
+          {expanded ? 'Hide details' : 'Details'}
+        </button>
+      </div>
+      {expanded && <CardDetails todo={todo} onUpdate={onUpdate} />}
     </div>
   )
 }
