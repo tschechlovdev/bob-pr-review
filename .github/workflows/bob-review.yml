@@ -33,7 +33,9 @@ jobs:
       - name: Bob Shell installieren
         timeout-minutes: 5
         run: |
-          curl -fsSL https://bob.ibm.com/download/bobshell.sh | bash -s -- --pm npm < /dev/null
+          curl -fsSL https://bob.ibm.com/download/bobshell.sh -o bobshell.sh
+          bash bobshell.sh --pm npm < /dev/null
+          rm -f bobshell.sh
           command -v bob || { echo "bob nicht im PATH"; exit 1; }
 
       - name: Review durch Bob
